@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TUTS AWARDS - O Oscar Alternativo</title>
+    <style>
+
+        :root {
+            --c-1: #0F168C;
+            --c-2: #0F1359;
+            --c-3: #171940;
+            --c-4: #1848D9;
+            --c-5: #5576D9;
+            --bg-window: #FFFFFF;
+            --text-dark: #171940;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--c-3);
+            font-family: 'Comic Sans MS', Arial, sans-serif;
+            color: var(--c-5);
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        #shaderCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 1.0;
+        }
+
+        #maskCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 200;
+            opacity: 1.0;
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 100;
+            width: 90vw;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .btn-ok {
+            background: #C0C0C0;
+            border: 2px outset #fff;
+            padding: 5px 20px;
+            margin-top: 15px;
+            cursor: pointer;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+        }
+
+        .btn-ok:active {
+            border-style: inset;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        .logo-img {
+            max-width: 520px;
+            width: 90%;
+            height: auto;
+            display: block;
+            margin: 0 auto 20px auto;
+            filter: drop-shadow(0 12px 0 var(--c-2));
+        }
+        @media (max-width: 768px) {
+            .logo-img {
+                max-width: 320px;
+            }
+        }
+
+        .span-t {
+            background: #00ffff; /* Alterado: Ciano */
+            color: #000;
+            transform: rotate(-2deg);
+        }
+
+        .span-t2 {
+            background: #00ffff;
+            color: #000;
+            transform: rotate(-1deg);
+        }
+
+        .span-r {
+            background: #00ffff;
+            color: #000;
+            transform: rotate(2deg);
+        }
+
+        .tagline {
+            font-size: 28px;
+            color: #FFFFFF;
+            text-shadow: 2px 2px var(--c-2);
+            margin-top: 20px;
+            animation: blink 1.5s infinite;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .window {
+            background: var(--bg-window);
+            border: 3px solid var(--c-1);
+            box-shadow: 8px 8px 0 var(--c-3);
+            margin-bottom: 30px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .window-header {
+            background: linear-gradient(90deg, var(--c-1), var(--c-4));
+            color: #FFFFFF;
+            padding: 5px 10px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .window-buttons {
+            display: flex;
+            gap: 3px;
+        }
+
+        .window-btn {
+            width: 18px;
+            height: 18px;
+            background: #C0C0C0;
+            border: 1px solid #000;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: #000;
+        }
+
+        .window-btn:active {
+            border-style: inset;
+        }
+
+
+        .window-body {
+            padding: 30px;
+            background: var(--bg-window);
+            color: var(--text-dark);
+        }
+
+        .section-title {
+            font-size: 32px;
+            color: var(--c-1);
+            text-shadow: none;
+            border-bottom: 4px solid var(--c-4);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.5; }
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            25% { transform: translate(-2px, 2px); }
+            50% { transform: translate(2px, -2px); }
+            75% { transform: translate(-2px, -2px); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .marquee {
+            background: var(--c-1);
+            border: 3px solid var(--c-2);
+            padding: 15px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .marquee-content {
+            display: inline-block;
+            animation: scroll 20s linear infinite;
+            white-space: nowrap;
+            font-weight: bold;
+            font-size: 20px;
+            color: #FFFFFF;
+        }
+
+        @keyframes scroll {
+            from { transform: translateX(100%); }
+            to { transform: translateX(-100%); }
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            background: var(--c-2);
+            color: #FFFFFF;
+            margin-top: 50px;
+            border-top: 5px solid var(--c-1);
+        }
+
+        @keyframes loading {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        .info-paragraph {
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+
+        .info-paragraph strong {
+            color: var(--c-4);
+        }
+
+        .vote-link-btn {
+            background: var(--c-4);
+            color: #FFFFFF;
+            border: 5px solid var(--c-1);
+            padding: 20px 40px;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 12px 12px 0 var(--c-2);
+            transition: all 0.2s;
+            font-family: inherit;
+            margin: 30px auto;
+            display: block;
+            width: fit-content;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .vote-link-btn:hover {
+            background: var(--c-1);
+            color: #FFFFFF;
+            box-shadow: 12px 12px 0 var(--c-2);
+        }
+
+        .vote-link-btn:active {
+            transform: translate(4px, 4px);
+            box-shadow: 4px 4px 0 var(--c-2);
+        }
+        @media (max-width: 768px) {
+            .content-wrapper {
+                width: 95vw;
+                padding: 10px;
+            }
+
+            .tagline {
+                font-size: 20px;
+            }
+
+            .section-title {
+                font-size: 24px;
+                margin-bottom: 15px;
+            }
+
+            .vote-link-btn {
+                padding: 15px 25px;
+                font-size: 22px;
+                box-shadow: 4px 4px 0 var(--c-2);
+            }
+            
+            .vote-link-btn {
+                max-width: 100%;
+            }
+
+            .info-paragraph strong {
+                color: var(--c-4);
+            }
+            
+            .window-body a div img {
+                max-width: 100% !important; 
+                width: 100% !important;
+                box-shadow: 4px 4px 0 var(--c-2) !important;
+            }
+            
+            .window-body div[style*="width: 80px;"] {
+                width: 60px !important;
+                height: 60px !important;
+            }
+            
+            .window-body div[style*="font-size: 40px;"] {
+                font-size: 30px !important;
+            }
+            
+            footer {
+                padding: 30px 10px;
+            }
+            
+            footer h3 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="shaderCanvas"></canvas>
+    <canvas id="maskCanvas"></canvas>
+
+    <div class="content-wrapper">
+        <div class="error-popup" id="errorPopup" style="display: none;">
+            <div class="error-header">
+                <span>⚠ SYSTEM ERROR</span>
+                <span style="cursor: pointer;" onclick="closeError()">X</span>
+            </div>
+            <div class="error-body">
+                <div class="error-icon">⚠️</div>
+                <strong>ERROR_TOO_MUCH_TALENT</strong>
+                <p style="margin: 10px 0;">Os indicados são incríveis demais!</p>
+                <button class="btn-ok" onclick="closeError()">OK</button>
+            </div>
+        </div>
+
+        <header>
+            <img 
+                src="logo.png"
+                alt="Tuts Awards"
+                class="logo-img"
+            />
+
+            <div class="tagline">
+                ★ BEM VINDOS A PIOR PREMIAÇÃO DO ANO ★
+            </div>
+        </header>
+
+        <div class="marquee">
+            <div class="marquee-content">
+                🏆 VOTAÇÃO ABERTA! 🏆 NÃO PERCA TEMPO! 🏆 PARTICIPE AGORA! 🏆 TUTS AWARDS 2025 🏆
+            </div>
+        </div>
+
+        <div class="container">
+
+            <div class="window" id="voting-window">
+                <div class="window-header">
+                    <span>🗳️ INICIAR_VOTACAO.lnk</span>
+                    <div class="window-buttons">
+                        <div class="window-btn">_</div>
+                        <div class="window-btn">□</div>
+                        <div class="window-btn">X</div>
+                    </div>
+                </div>
+                <div class="window-body" style="text-align: center;">
+                    <h2 class="section-title">CLIQUE PARA ACESSAR O FORMULÁRIO DE VOTAÇÃO!</h2>
+                    <p class="info-paragraph" style="text-align: center;">
+                        Você será redirecionado para o formulário oficial no Google Forms, onde poderá preencher todos
+                        os seus votos.
+                    </p>
+
+                    <a href="https://forms.gle/g32D5Uq19WfL1hzp7" class="vote-link-btn" target="_blank">
+                        VOTE AGORA!
+                    </a>
+
+                    <p class="info-paragraph" style="text-align: center; font-style: italic; font-size: 14px; margin-top: 10px;">
+                        Atenção: A votação será aberta em uma nova janela/aba.
+                    </p>
+                </div>
+            </div>
+
+            <div class="window">
+                <div class="window-header">
+                    <span>🎥 EDIÇÃO_ANTERIOR.mp4</span>
+                    <div class="window-buttons">
+                        <div class="window-btn">_</div>
+                        <div class="window-btn">□</div>
+                        <div class="window-btn">X</div>
+                    </div>
+                </div>
+                <div class="window-body" style="padding: 30px; text-align: center;">
+                    <h2 class="section-title" style="margin-bottom: 20px;">REVEJA A EDIÇÃO ANTERIOR!</h2>
+
+                    <a href="https://www.youtube.com/watch?v=NptrNT2VOF0" target="_blank" style="text-decoration: none;">
+                        <div style="position: relative; display: inline-block;">
+                            <img src="https://img.youtube.com/vi/NptrNT2VOF0/maxresdefault.jpg" alt="TUTS AWARDS 2024"
+                                style="max-width: 100%; border: 5px solid var(--c-1); box-shadow: 8px 8px 0 var(--c-2);">
+
+                            <div
+                                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                                <div
+                                    style="background: var(--c-4); width: 80px; height: 80px;
+                                        border-radius: 50%; display: flex; align-items: center;
+                                        justify-content: center; border: 5px solid var(--c-1);
+                                        box-shadow: 0 0 0 6px var(--c-2);">
+                                    <span style="color: white; font-size: 40px; margin-left: 5px;">▶</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+            <div class="window">
+                <div class="window-header">
+                    <span>📝 SOBRE.info</span>
+                    <div class="window-buttons">
+                        <div class="window-btn">_</div>
+                        <div class="window-btn">□</div>
+                        <div class="window-btn">X</div>
+                    </div>
+                </div>
+                <div class="window-body">
+                    <h2 class="section-title">O QUE É O TUTS AWARDS?</h2>
+
+                    <p class="info-paragraph">
+                        O <strong>Tuts Awards</strong> é uma premiação respeitável, necessária e levemente duvidosa,
+                        idealizada por Arthur
+                        Moraes - também conhecido como <strong>Tuts</strong>. Sua missão é celebrar o que o mundo (e
+                        Fortaleza) tem de
+                        melhor na cultura pop, enquanto, sempre que possível, arranca boas risadas do público.
+                    </p>
+
+                    <p class="info-paragraph">
+                        A cerimônia se dedica à honrosa entrega de prêmios que transitam entre a <strong>cultura pop</strong>
+                        e a
+                        <strong>comédia</strong>, reconhecendo feitos memoráveis, questionáveis e, às vezes, completamente
+                        inesperados.
+                        Ao longo do evento, o público pode esperar quadros pensados para criar um clima descontraído,
+                        marcado pela
+                        resenha, pelo humor e pelo caos controlado.
+                    </p>
+
+                    <p class="info-paragraph">
+                        A iniciativa é realizada por uma equipe mais do que extraordinária:
+                    </p>
+
+                    <p class="info-paragraph">
+                        <strong>Criação e apresentação:</strong> Arthur Moraes<br>
+                        <strong>Produção:</strong> Gustavo Mendes, Bruno Matos, Caio Rocancourt e Juan Rocha<br>
+                        <strong>Site:</strong> Ricardo Filho Bandeira, Woody Quintanilha e Gabriel Freitas<br>
+                        <strong>Design:</strong> Victor Paz e Juan Rocha<br>
+                        <strong>Direção criativa:</strong> Rodrigo Nogueira e Juan Rocha
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <footer>
+            <h3 style="font-size: 28px; margin-bottom: 15px;">🎉 TUTS AWARDS © 2025 🎉</h3>
+            <p style="font-size: 16px;">Feito com muito resenha</p>
+            <p style="margin-top: 15px; font-size: 14px;">ERROR 404</p>
+        </footer>
+    </div>
+
+    <script>
+
+        const shaderCanvas = document.getElementById('shaderCanvas');
+        const glShader = shaderCanvas.getContext('webgl');
+
+        const maskCanvas = document.getElementById('maskCanvas');
+        const glMask = maskCanvas.getContext('webgl');
+
+        if (!glShader || !glMask) {
+            console.error('WebGL não suportado');
+        } else {
+            function resizeCanvas(canvas, gl) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                gl.viewport(0, 0, canvas.width, canvas.height);
+            }
+            resizeCanvas(shaderCanvas, glShader);
+            resizeCanvas(maskCanvas, glMask);
+            window.addEventListener('resize', () => {
+                resizeCanvas(shaderCanvas, glShader);
+                resizeCanvas(maskCanvas, glMask);
+            });
+
+            const vertexShaderSource = `
+                attribute vec2 a_position;
+                void main() {
+                    gl_Position = vec4(a_position, 0.0, 1.0);
+                }
+            `;
+
+            const borderFragmentShaderSource = `
+                precision mediump float;
+                uniform vec2 iResolution;
+                uniform float iTime;
+
+                float hash11(float p)
+                {
+                    p = fract(p * .1031);
+                    p *= p + 33.33;
+                    p *= p + p;
+                    return fract(p);
+                }
+
+                vec3 hash13(float p)
+                {
+                vec3 p3 = fract(p * vec3(.1031, .11369, .13787));
+                p3 += dot(p3, p3.yzx + 19.19);
+                return fract(vec3((p3.x + p3.y)*p3.z, (p3.x+p3.z)*p3.y, (p3.y+p3.z)*p3.x));
+                }
+
+                vec2 crt_distort(vec2 uv)
+                {
+                    uv = uv * 2.0 - 1.0; 
+                    float dist = dot(uv, uv);
+                    uv *= 1.0 + dist * 0.1; 
+                    return uv * 0.5 + 0.5; 
+                }
+
+                void main() {
+                    vec2 fragCoord = gl_FragCoord.xy;
+                    vec2 uv = fragCoord.xy / iResolution.xy;
+                    uv.y = 1.0 - uv.y; 
+                    
+                    vec2 distorted_uv = crt_distort(uv);
+                    
+                    if (distorted_uv.x < 0.0 || distorted_uv.x > 1.0 || distorted_uv.y < 0.0 || distorted_uv.y > 1.0)
+                    {
+                        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); 
+                        return;
+                    }
+                    
+                    uv = distorted_uv; 
+
+                    float time = iTime;
+                    
+                    vec3 base_color = vec3(
+                        24.0/255.0,
+                        72.0/255.0,
+                        217.0/255.0
+                    );
+                    vec3 col = base_color * 0.25; 
+                    
+                    float noise_seed = floor(time * 5.0); 
+                    float static_noise = hash11(uv.x * 1000.0 + uv.y * 500.0 + noise_seed);
+                    col += vec3(static_noise) * 0.3 * base_color; 
+                    
+                    float roll_speed = -0.05; 
+                    float roll_pos = fract(time * roll_speed); 
+                    
+                    float line_density = uv.y * 20.0 + roll_pos * 20.0;
+                    float line_noise = hash11(uv.x * 50.0 + floor(line_density) * 1.5);
+
+                    float roll_bar_height = 0.2; 
+                    float roll_y = abs(uv.y - (1.0 - roll_pos)); 
+                    float roll_intensity = smoothstep(roll_bar_height, roll_bar_height * 0.5, roll_y * 1.5); 
+                    
+                    vec3 roll_color = base_color * line_noise;
+                    
+                    col += roll_color * roll_intensity * 0.4; 
+
+
+                    float scanline_density = iResolution.y; 
+                    
+                    float scroll_speed = 0.005; 
+                    float y_pos_scrolling = fract(uv.y + time * scroll_speed); 
+                    
+                    float scanline_mix = sin(y_pos_scrolling * scanline_density * 3.14159 * 2.0); 
+                    
+                    float scanline_factor = mix(0.7, 1.0, scanline_mix * 0.5 + 0.5); 
+                    
+                    col *= scanline_factor;
+
+                    float vignette = length(uv - 0.5) * 2.0;
+                    vignette = pow(vignette, 2.0); 
+                    col *= 1.0 - vignette * 0.3; 
+
+                    gl_FragColor = vec4(col, 1.0);
+                }
+            `;
+
+            const maskFragmentShaderSource = `
+                precision mediump float;
+                uniform vec2 iResolution;
+
+                vec2 crtCurve(vec2 uv) {
+                    uv = uv * 2.0 - 1.0;
+                    vec2 offset = abs(uv.yx) / vec2(4.0, 2.5);
+                    uv = uv + uv * offset * offset;
+                    uv = uv * 0.5 + 0.5;
+                    return uv;
+                }
+
+                void main() {
+                    vec2 fragCoord = gl_FragCoord.xy;
+                    vec2 uv = fragCoord.xy / iResolution.xy;
+                    uv.y = 1.0 - uv.y;
+                    
+                    vec2 crtUV = crtCurve(uv);
+                    
+                    float insideTV = step(0.015, crtUV.x) * step(crtUV.x, 0.985) * step(0.015, crtUV.y) * step(crtUV.y, 0.985);
+                    
+                    vec3 finalColor = vec3(0.0);
+                    float alpha = insideTV == 0.0 ? 1.0 : 0.0;
+                    
+                    gl_FragColor = vec4(finalColor, alpha);
+                }
+            `;
+
+            function createShader(gl, type, source) {
+                const shader = gl.createShader(type);
+                gl.shaderSource(shader, source);
+                gl.compileShader(shader);
+                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                    console.error(gl.getShaderInfoLog(shader));
+                    gl.deleteShader(shader);
+                    return null;
+                }
+                return shader;
+            }
+
+            const borderVertexShader = createShader(glShader, glShader.VERTEX_SHADER, vertexShaderSource);
+            const borderFragmentShader = createShader(glShader, glShader.FRAGMENT_SHADER, borderFragmentShaderSource);
+            const borderProgram = glShader.createProgram();
+            glShader.attachShader(borderProgram, borderVertexShader);
+            glShader.attachShader(borderProgram, borderFragmentShader);
+            glShader.linkProgram(borderProgram);
+
+            const borderPositionAttributeLocation = glShader.getAttribLocation(borderProgram, 'a_position');
+            const borderResolutionUniformLocation = glShader.getUniformLocation(borderProgram, 'iResolution');
+            const borderTimeUniformLocation = glShader.getUniformLocation(borderProgram, 'iTime');
+
+            const borderPositionBuffer = glShader.createBuffer();
+            glShader.bindBuffer(glShader.ARRAY_BUFFER, borderPositionBuffer);
+            const positions = [-1, -1, 1, -1, -1, 1, 1, 1];
+            glShader.bufferData(glShader.ARRAY_BUFFER, new Float32Array(positions), glShader.STATIC_DRAW);
+
+            const maskVertexShader = createShader(glMask, glMask.VERTEX_SHADER, vertexShaderSource);
+            const maskFragmentShader = createShader(glMask, glMask.FRAGMENT_SHADER, maskFragmentShaderSource);
+            const maskProgram = glMask.createProgram();
+            glMask.attachShader(maskProgram, maskVertexShader);
+            glMask.attachShader(maskProgram, maskFragmentShader);
+            glMask.linkProgram(maskProgram);
+
+            const maskPositionAttributeLocation = glMask.getAttribLocation(maskProgram, 'a_position');
+            const maskResolutionUniformLocation = glMask.getUniformLocation(maskProgram, 'iResolution');
+
+            const maskPositionBuffer = glMask.createBuffer();
+            glMask.bindBuffer(glMask.ARRAY_BUFFER, maskPositionBuffer);
+            glMask.bufferData(glMask.ARRAY_BUFFER, new Float32Array(positions), glMask.STATIC_DRAW);
+
+            function render(time) {
+                time *= 0.001;
+
+                glShader.clear(glShader.COLOR_BUFFER_BIT | glShader.DEPTH_BUFFER_BIT);
+                glShader.enable(glShader.BLEND);
+                glShader.blendFunc(glShader.SRC_ALPHA, glShader.ONE_MINUS_SRC_ALPHA);
+                glShader.useProgram(borderProgram);
+                glShader.enableVertexAttribArray(borderPositionAttributeLocation);
+                glShader.bindBuffer(glShader.ARRAY_BUFFER, borderPositionBuffer);
+                glShader.vertexAttribPointer(borderPositionAttributeLocation, 2, glShader.FLOAT, false, 0, 0);
+                glShader.uniform2f(borderResolutionUniformLocation, shaderCanvas.width, shaderCanvas.height);
+                glShader.uniform1f(borderTimeUniformLocation, time);
+                glShader.drawArrays(glShader.TRIANGLE_STRIP, 0, 4);
+
+                glMask.clear(glMask.COLOR_BUFFER_BIT | glMask.DEPTH_BUFFER_BIT);
+                glMask.enable(glMask.BLEND);
+                glMask.blendFunc(glMask.SRC_ALPHA, glMask.ONE_MINUS_SRC_ALPHA);
+                glMask.useProgram(maskProgram);
+                glMask.enableVertexAttribArray(maskPositionAttributeLocation);
+                glMask.bindBuffer(glMask.ARRAY_BUFFER, maskPositionBuffer);
+                glMask.vertexAttribPointer(maskPositionAttributeLocation, 2, glMask.FLOAT, false, 0, 0);
+                glMask.uniform2f(maskResolutionUniformLocation, maskCanvas.width, maskCanvas.height);
+                glMask.drawArrays(glMask.TRIANGLE_STRIP, 0, 4);
+
+                requestAnimationFrame(render);
+            }
+            requestAnimationFrame(render);
+        }
+    </script>
+</body>
+
+</html>
